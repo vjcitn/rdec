@@ -48,6 +48,8 @@ second-order autoregressive (AR(2)) models and AR(1) models with random intercep
 
 # A simple simulation
 
+## Building covariance matrices
+
 The function `mycov` builds a correlation matrix
 based on the rdec model, with observation times in `s`.
 ```{r dosim1}
@@ -57,6 +59,8 @@ mycov = function(gam=.33, theta=.5, s=1:5) {
   gam^(d^theta)
 }
 ```
+
+## Simulating and fitting a zero-mean model
 
 The model can accommodate clusters of different sizes
 and heterogeneous timings.  Here we simulate a zero-mean
@@ -78,6 +82,8 @@ n1 = simgst_bal_zeromean(.33, .5)
 summary(n1)
 ```
 
+## Iterating the fitting process
+
 Now we replicate the simulation process for 100 realizations.
 ```{r do2}
 n2 = replicate(100, simgst_bal_zeromean(.33, .5))
@@ -87,6 +93,10 @@ A report on the first replicate is:
 ```{r do3}
 rdec:::summary.rdec(n2[,1])
 ```
+
+## Adequacy of standard error estimation
+
+### Standard errors of $\gamma$ compared to sampling distribution
 
 The distribution of estimates of $\gamma$ can be obtained using
 ```{r do4}
@@ -112,3 +122,11 @@ summary(allses[1,])
 The median s.e. estimate for $\hat{\gamma}$ is close to the sampling s.d. for
 the estimates of $\gamma$.  
 
+### Similar process for $\theta$
+
+```{r lkhes}
+thes = apply(n2, 2, function(x) x$omega[2]) 
+#vth = apply(n2,2,function(x)solve(-x$hessian)[4,4])
+summary(allses[2,])
+sd(thes)
+```
