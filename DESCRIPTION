@@ -1,5 +1,5 @@
 Package: rdec
-Version: 0.0.14
+Version: 0.0.15
 Title: rdec -- regression with damped exponential correlation
 Description: The rdec function uses generalized least squares to estimate
 	covariate effects in the presence of a structured correlation
