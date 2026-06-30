@@ -11,12 +11,16 @@ Description: The rdec function uses generalized least squares to estimate
 	t == 0 implies a compound symmetry or exchangeable correlation,
 	t == 1 implies a first-order autoregression, and large t implies
 	a first-order moving average model.
-Authors@R:
+Authors@R: c(
     person(given = "Vince",
            family = "Carey",
            role = c("aut", "cre"),
            email = "stvjc@channing.harvard.edu",
-           comment = c(ORCID = "0000-0003-4046-0063"))
+           comment = c(ORCID = "0000-0003-4046-0063")),
+    person(given = "Claude Sonnet",
+           family = "4.6",
+           role = "eng",
+           email = "noreply@anthropic.com"))
 Suggests: MASS, knitr, BiocStyle, rmarkdown, reshape2, dplyr,
 	testthat
 License: Artistic-2.0
