@@ -189,14 +189,19 @@ rdec.prof.hess <- function( omega, x, y, id, S, beta, sig2 )
 
 
 #' regression with damped exponential correlation
-#' 
+#'
 #' ML fitting of a multivariate gaussian model for longitudinal data that
 #' generalizes AR(1), CS, and MA(1) covariance structures
-#' 
+#'
 #' @param formula standard linear modeling formula
-#' @param id vector of cluster discriminators
-#' @param S vector of observation times
-#' @param data resolve model formula elements in this data frame
+#' @param id bare column name or vector of cluster discriminators; numeric,
+#'   character, or factor values are all accepted -- non-numeric ids are
+#'   converted to sequential integers in order of first appearance
+#' @param S bare column name or numeric vector of observation times within
+#'   each cluster
+#' @param data data frame from which \code{formula}, \code{id}, and \code{S}
+#'   are resolved; when supplied, \code{id} and \code{S} may be given as
+#'   unquoted column names
 #' @param subset logical subsetting vector
 #' @param na.action action to take for NA in formula element
 #' @param omega.init starting value for covariance parameter vector (dim=2)
@@ -212,27 +217,35 @@ rdec.prof.hess <- function( omega, x, y, id, S, beta, sig2 )
 #' @references Munoz Carey Rosner et al, Biometrics 1992
 #' @keywords models
 #' @examples
-#' 
+#'
 #' data(rdtest)
-#' summary( rdec(rdec.y~rdec.x, id=rdtest$rdec.id, S=rdtest$rdec.s, omega.init = c(.5,.5), omega.low=c(.01,.01),
-#'    omega.high=c(.95, .95), data=rdtest ))
-#' 
+#' # id and S as bare column names resolved from data=
+#' summary( rdec(rdec.y~rdec.x, id=rdec.id, S=rdec.s, omega.init = c(.5,.5),
+#'    omega.low=c(.01,.01), omega.high=c(.95, .95), data=rdtest) )
+#'
 #' @export
-rdec <- function (formula, id, S, data , subset, na.action = na.fail, 
-    omega.init = c(0, 0), omega.low = c(0.001, 0), omega.high = c(0.95, 
-        0.95), ltol = 0.01, contrasts = NULL, verbose = FALSE) 
+rdec <- function (formula, id, S, data, subset, na.action = na.fail,
+    omega.init = c(0, 0), omega.low = c(0.001, 0), omega.high = c(0.95,
+        0.95), ltol = 0.01, contrasts = NULL, verbose = FALSE)
 {
     call <- match.call()
     m <- match.call(expand.dots = FALSE)
+    if (missing(data))
+        data <- environment(formula)
     ff <- model.frame(formula, data=data)
-    if (missing(data) & !missing(na.action)) 
+    if (is.environment(data) & !missing(na.action))
         stop("supply data frame (data=) if na.action is to be used")
     Terms <- attr(m, "terms")
     Y <- model.response(ff)
     X <- model.matrix(formula, data=data)
-    id <- as.double(id)
+    id <- eval(substitute(id), data, parent.frame())
+    S  <- eval(substitute(S),  data, parent.frame())
+    if (!is.numeric(id))
+        id <- as.double(as.numeric(factor(id, levels = unique(id))))
+    else
+        id <- as.double(id)
     S <- as.double(S)
-    fit <- rdec.fit(X, Y, id, S, omegainit = omega.init, omega.high = omega.high, 
+    fit <- rdec.fit(X, Y, id, S, omegainit = omega.init, omega.high = omega.high,
         omega.low = omega.low, ltol = ltol, verbose = verbose)
     fit$terms <- Terms
     fit$call <- call

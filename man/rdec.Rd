@@ -22,11 +22,16 @@ rdec(
 \arguments{
 \item{formula}{standard linear modeling formula}
 
-\item{id}{vector of cluster discriminators}
+\item{id}{bare column name or vector of cluster discriminators; numeric,
+character, or factor values are all accepted -- non-numeric ids are
+converted to sequential integers in order of first appearance}
 
-\item{S}{vector of observation times}
+\item{S}{bare column name or numeric vector of observation times within
+each cluster}
 
-\item{data}{resolve model formula elements in this data frame}
+\item{data}{data frame from which \code{formula}, \code{id}, and \code{S}
+are resolved; when supplied, \code{id} and \code{S} may be given as
+unquoted column names}
 
 \item{subset}{logical subsetting vector}
 
@@ -57,8 +62,9 @@ uses optim with specified gradient function
 \examples{
 
 data(rdtest)
-summary( rdec(rdec.y~rdec.x, id=rdtest$rdec.id, S=rdtest$rdec.s, omega.init = c(.5,.5), omega.low=c(.01,.01),
-   omega.high=c(.95, .95), data=rdtest ))
+# id and S as bare column names resolved from data=
+summary( rdec(rdec.y~rdec.x, id=rdec.id, S=rdec.s, omega.init = c(.5,.5),
+   omega.low=c(.01,.01), omega.high=c(.95, .95), data=rdtest) )
 
 }
 \references{
